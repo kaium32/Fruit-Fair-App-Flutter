@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fruit Fair',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
       home: HomePage(),
     );
   }
@@ -76,6 +80,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   List<Map<String, dynamic>> _foundFruits = [];
+
   @override
   initState() {
     _foundFruits = _allFruits;
@@ -89,58 +94,69 @@ class _HomePageState extends State<HomePage> {
     } else {
       results = _allFruits
           .where((user) =>
-          user["name"].toLowerCase().contains(enteredKeyword.toLowerCase()))
+              user["name"].toLowerCase().contains(enteredKeyword.toLowerCase()))
           .toList();
     }
     setState(() {
       _foundFruits = results;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fruit Fair'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            SizedBox(
-              height: 20,
-            ),
             TextField(
               onChanged: (value) => _runFilter(value),
               decoration: InputDecoration(
-                  labelText: 'Search', suffixIcon: Icon(Icons.search)),
+                  hintText: 'Search',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(
+                        color: Colors.green.withOpacity(0.1),
+                      )),
+                  suffixIcon: Icon(Icons.search)),
             ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             Expanded(
               child: _foundFruits.length > 0
                   ? ListView.builder(
-                itemCount: _foundFruits.length,
-                itemBuilder: (context, index) => Card(
-                  key: ValueKey(_foundFruits[index]["id"]),
-                  color: Colors.amberAccent,
-                  elevation: 4,
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  child: ListTile(
-                    leading: Text(
-                      _foundFruits[index]["id"].toString(),
-                      style: TextStyle(fontSize: 24),
+                      itemCount: _foundFruits.length,
+                      itemBuilder: (context, index) => Card(
+                        key: ValueKey(_foundFruits[index]["id"]),
+                        color: Colors.green,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                        shadowColor: Colors.grey,
+                        margin: EdgeInsets.symmetric(vertical: 7),
+                        child: ListTile(
+                          leading: Text(
+                            _foundFruits[index]["id"].toString(),
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          title: Text(_foundFruits[index]['name']),
+                          subtitle: Text(
+                              '${_foundFruits[index]["quantity"].toString()} Pieces'),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        'No results found',
+                        style: TextStyle(fontSize: 24),
+                      ),
                     ),
-                    title: Text(_foundFruits[index]['name']),
-                    subtitle: Text(
-                        '${_foundFruits[index]["quantity"].toString()} years old'),
-                  ),
-                ),
-              )
-                  : Text(
-                'No results found',
-                style: TextStyle(fontSize: 24),
-              ),
             ),
           ],
         ),
